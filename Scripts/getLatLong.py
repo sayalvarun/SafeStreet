@@ -2,7 +2,11 @@ import sys
 import urllib2
 import json
 
-key = "AIzaSyCH4CaT-Nrqnk_jy7lajqM6ctep22SAk2Y"
+def getGeocodingKey():
+	geoFile = open("../Keys/geocoding.txt","r")
+	key = geoFile.read()
+	return key
+	
 
 def getLatLong(query):
 	base = "https://maps.googleapis.com/maps/api/geocode/json?address="
@@ -22,6 +26,8 @@ except IndexError:
 
 address = address.strip()
 address = address.replace(" ","+")
+
+key = getGeocodingKey()
 
 # Testing
 lat, lng = getLatLong(address)
