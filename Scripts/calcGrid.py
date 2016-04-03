@@ -3,49 +3,80 @@ import math
 import sys
 import pickle
 
-class squares(object):
-	def __init__(self):
-		self.startLat = 40.5683282534
-		self.startLong = -74.0413284302
-		self.endLat = 40.866276056
-		self.endLong = -73.7635803223
-		self.r_earth = 6378
-		self.dy = 0.2955
-		self.dx = 0.2802
-		self.grid_id = 0
-		self.grids = {}
-		self.rows = {}
-		self.row_id = 0
-		self.currLat = self.startLat
-		self.currLong = self.startLong
+startLat = 40.5683282534
+startLong = -74.0413284302
+endLat = 40.866276056
+endLong = -73.7635803223
+r_earth = 6378
+dy = 0.2955
+dx = 0.2802
+grid_id = 0
+grids = {}
+rows = {}
+row_id = 0
+currLat = startLat
+currLong = startLong
+new_grid = pickle.load(open("new_grid.pkl","rb"))
+new_rows = pickle.load(open("rows.pkl","rb"))
 
-	def calculate_grids(self):
-		while self.currLat < self.endLat:
-			self.rows[self.row_id] = [self.currLat,self.grid_id]
-			self.currLong = self.startLong
-			newLat  = self.currLat  + (self.dy / self.r_earth) * (180 / math.pi)
-			while self.currLong < self.endLong:
-				oldLong = self.currLong
-				self.currLong = self.currLong + (self.dx / self.r_earth) * (180 / math.pi) / math.cos(self.currLat * math.pi/180);
-				self.grids[self.grid_id] = {'BL_LAT':self.currLat,'BL_LONG':oldLong,'TR_LAT':newLat,'TR_LONG':self.currLong,'ROW_ID':self.row_id,'SCORE':0}
-				self.grid_id = self.grid_id + 1
-			self.currLat = newLat
-			self.row_id = self.row_id + 1
-		pickle.dump(self.grids,open("Grid.pkl","wb"))
+def calculate_grids():
+	global grids
+	global rows
+	while currLat < endLat:
+		rows[row_id] = [currLat,grid_id]
+		currLong = startLong
+		newLat  = currLat  + (dy / r_earth) * (180 / math.pi)
+		while currLong < endLong:
+			oldLong = currLong
+			currLong = currLong + (dx / r_earth) * (180 / math.pi) / math.cos(currLat * math.pi/180);
+			grids[grid_id] = {'BL_LAT':currLat,'BL_LONG':oldLong,'TR_LAT':newLat,'TR_LONG':currLong,'ROW_ID':row_id,'SCORE':0}
+			grid_id = grid_id + 1
+		currLat = newLat
+		row_id = row_id + 1
+	pickle.dump(grids,open("Grid.pkl","wb"))
+	pickle.dump(rows,open("rows.pkl","wb"))
 
-	def find_grid(self,lat,long):
-		finalRow = -1
-		for row in range(0,len(self.rows.keys()) - 1):
-			if lat <= self.rows[len(self.rows.keys()) - 1][0] and row + 1 < len(self.rows.keys()) and self.rows[row][0] <= lat and self.rows[row+1][0] > lat: 
-				finalRow = row
-		if finalRow < 0:
-			return -1
-		start_grid = self.rows[finalRow][1]
+def find_grid(lat,lon):
+	global new_grid
+	global new_rows
+	finalRow = -1
+	for row in range(0,len(new_rows.keys()) - 1):
+		if lat <= new_rows[len(new_rows.keys()) - 1][0] and row + 1 < len(new_rows.keys()) and new_rows[row][0] <= lat and new_rows[row+1][0] > lat: 
+			finalRow = row
+	if finalRow < 0:
+		return -1
+	else:
+		start_grid = new_rows[finalRow][1]
 		finalCol = -1
 		for col in range(start_grid, start_grid + 85):
-			if col < len(self.grids.keys()) and self.grids[col]['BL_LONG'] <= long and self.grids[col]['TR_LONG'] > long:
+			if col < len(new_grid.keys()) and new_grid[col]['BL_LONG'] <= lon and new_grid[col]['TR_LONG'] > lon:
 				finalCol = col
-		return finalCol
+	return finalCol
+
+def calc(coords):
+	grids = pickle.load(open("Grid.pkl","rb"))
+	rows = pickle.load(open("rows.pkl","rb"))
+	lists = []
+	count = 0
+	for coord in coords:
+		lat = coord[0]
+		lon = coord[1]
+		finalRow = -1
+		for row in range(0,len(rows.keys()) - 1):
+			if lat <= rows[len(rows.keys()) - 1][0] and row + 1 < len(rows.keys()) and rows[row][0] <= lat and rows[row+1][0] > lat: 
+				finalRow = row
+		if finalRow < 0:
+			lists.append(finalRow)
+		else:
+			start_grid = rows[finalRow][1]
+			finalCol = -1
+			for col in range(start_grid, start_grid + 85):
+				if col < len(grids.keys()) and grids[col]['BL_LONG'] <= lon and grids[col]['TR_LONG'] > lon:
+					finalCol = col
+			if finalCol == -1:
+				count = count + 1
+			lists.append(finalCol)
+	return lists
 
 if __name__ == "__main__":
 	latitude = 0.0
@@ -53,8 +84,6 @@ if __name__ == "__main__":
 	if len(sys.argv) >= 2:
 		latitude = sys.argv[1]
 		longitude = sys.argv[2]
-	sqr = squares()
-	sqr.calculate_grids()
-	print sqr.find_grid(float(latitude),float(longitude))
-
+	#calculate_grids()
+	print find_grid(float(latitude),float(longitude))
 
