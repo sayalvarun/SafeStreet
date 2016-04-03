@@ -1,6 +1,7 @@
 #84,112
 import math 
 import sys
+import pickle
 
 class squares(object):
 	def __init__(self):
@@ -30,7 +31,7 @@ class squares(object):
 				self.grid_id = self.grid_id + 1
 			self.currLat = newLat
 			self.row_id = self.row_id + 1
-		return self.grids
+		pickle.dump(self.grids,open("Grid.pkl","wb"))
 
 	def find_grid(self,lat,long):
 		finalRow = -1
