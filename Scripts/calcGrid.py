@@ -36,9 +36,15 @@ def calculate_grids():
 	pickle.dump(grids,open("Grid.pkl","wb"))
 	pickle.dump(rows,open("rows.pkl","wb"))
 
+
+def get_details(grid_num):
+	global new_grid
+	return new_grid[grid_num]
+
 def find_grid(lat,lon):
 	global new_grid
 	global new_rows
+	dict = {}
 	finalRow = -1
 	for row in range(0,len(new_rows.keys()) - 1):
 		if lat <= new_rows[len(new_rows.keys()) - 1][0] and row + 1 < len(new_rows.keys()) and new_rows[row][0] <= lat and new_rows[row+1][0] > lat: 
@@ -51,7 +57,9 @@ def find_grid(lat,lon):
 		for col in range(start_grid, start_grid + 85):
 			if col < len(new_grid.keys()) and new_grid[col]['BL_LONG'] <= lon and new_grid[col]['TR_LONG'] > lon:
 				finalCol = col
-	return finalCol
+	if finalCol == -1:
+		return -1,dict
+	return finalCol,new_grid[finalCol]
 
 def calc(coords):
 	grids = pickle.load(open("Grid.pkl","rb"))
