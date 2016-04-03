@@ -34,8 +34,12 @@ def getDirections(source, destination):
 
     return obj
 
+def getDirectionPoints(source, dest):
+	res = getDirections(source, dest)
+	pprint.pprint(res["routes"][0]["legs"])
+	
+
 s = "251 Mercer steet, New York NY"
 d = "Empire State Building"
 
-res = getDirections(s,d)
-print(str(res))
+print getDirectionPoints(s,d)
