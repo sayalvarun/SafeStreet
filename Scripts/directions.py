@@ -12,7 +12,7 @@ import calcGrid
 grid = pickle.load(open('new_grid.pkl','rb'))
 
 def getKey():
-    f = open('key.txt')
+    f = open('../key.txt')
     key = f.read()
     return key
 
@@ -38,7 +38,21 @@ def getWaypoints(points, source, dest):
     if status != "OK":
         return None
 
-    return getPolyline(obj)
+    poly = getPolyline(obj)
+    start_lat = obj["routes"][0]["legs"][0]["start_location"]["lat"]
+    start_long = obj["routes"][0]["legs"][0]["start_location"]["lng"]
+    leg_len = len(obj["routes"][0]["legs"])
+    end_lat = obj["routes"][0]["legs"][leg_len-1]["end_location"]["lat"]
+    end_long = obj["routes"][0]["legs"][leg_len-1]["end_location"]["lng"]
+    
+    output = {}
+    output["polyline"] = poly
+    output["start"] = {"lat":start_lat,"long":start_long}
+    output["end"] = {"lat":end_lat,"long":end_long}
+    print "DIMPS OUTPUT"
+    print json.dumps(output)
+    return json.dumps(output)    
+
 
 def getPolyline(obj):
     return obj['routes'][0]['overview_polyline']['points']

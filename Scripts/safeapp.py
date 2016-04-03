@@ -12,11 +12,11 @@ def index():
 
 @app.route("/getCoordinates", methods=['GET','POST'])
 def getCoords():
-    source = request.args.get('source')
-    dest = request.args.get('destination')
+    source = request.args.get('source')+",new york, NY"
+    dest = request.args.get('destination')+",new york, NY"
     points = directions.computeNewWaypoints(directions.getDirectionPoints(source,dest))
     result = directions.getWaypoints(points,source,dest)
-    return json.dumps(result)
+    return result
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
