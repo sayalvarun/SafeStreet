@@ -16,6 +16,33 @@ def getKey():
     key = f.read()
     return key
 
+def getWaypoints(points, source, dest):
+    url = 'https://maps.googleapis.com/maps/api/directions/json?origin='
+    url += source
+    url += "&destination="
+    url += dest
+    url += "&mode=walking"
+    url += "&waypoints=optimize:true|"
+    for point in points:
+        url += str(point[0]) + ',' + str(point[1]) + '|'
+    url = url[:-1] #remove the extra '|'
+    url += "&key="
+    url += getKey()
+    url = string.replace(url, "\n", "")
+
+    print(url + "\n\n")
+
+    r = requests.get(url)   
+    obj = r.json()
+    status = obj["status"]
+    if status != "OK":
+        return None
+
+    return getPolyline(obj)
+
+def getPolyline(obj):
+    return obj['routes'][0]['overview_polyline']['points']
+
 def getURL(source, destination):
     url = 'https://maps.googleapis.com/maps/api/directions/json?origin='
     url += source
