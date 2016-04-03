@@ -84,14 +84,16 @@ def getCheapestNeighbor(start, up, right, left, down):
 			
 		
 
-def getTilesForLeg(start, end):
+def getTilesForLeg(start, end, analyze_end):
 	print "get tiles"
 	sid = calcGrid.find_grid(start[0],start[1])[0]
 	eid = calcGrid.find_grid(end[0],end[1])[0]
 	tiles = [calcGrid.get_details(sid)]
-	while(eid != sid):
+	eid_analyzed = False
+	while((eid != sid and not analyze_end) or (not eid_analyzed and analyze_end)):
 		print "in while"
 		retid = sid
+
 		if eid > sid:
 			if eid - sid < 84:
 				#exclusively right
@@ -128,10 +130,18 @@ def getTilesForLeg(start, end):
 				#Only down
 				retid = getCheapestNeighbor(sid, 0, 0, 0, 1)
 				tiles.append(calcGrid.get_details(retid))
+		
+		if eid==sid and analyze_end:
+			eid_analyzed = True
+			break
+
+
 		print "sid:",sid
 		print "retid:",retid
 		print "eid:",eid
 		sid = retid
+
+	
 	return tiles
 
 def getMidLatLong(tile):
@@ -144,12 +154,15 @@ def getMidLatLong(tile):
 def computeNewWaypoints(directionList):
 	startTup = directionList[0]
 	wayps = set()
-	for p in directionList[1:-1]:
-		tiles = getTilesForLeg(startTup, p)
+	for p in directionList[1:-2]:
+		tiles = getTilesForLeg(startTup, p, True)
 		pprint.pprint(tiles)
 		for t in tiles:
 			wayps.add(getMidLatLong(t))
 		startTup = p
+	tiles = getTilesForLeg(startTup, directionList[len(directionList)-1], False)
+	for t in tiles:
+			wayps.add(getMidLatLong(t))
 	return wayps
 	
 
