@@ -12,7 +12,7 @@ import calcGrid
 grid = pickle.load(open('new_grid.pkl','rb'))
 
 def getKey():
-    f = open('../key.txt')
+    f = open('key.txt')
     key = f.read()
     return key
 

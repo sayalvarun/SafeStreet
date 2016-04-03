@@ -53,7 +53,7 @@ def find_grid(lat,lon):
 		if lat <= new_rows[len(new_rows.keys()) - 1][0] and row + 1 < len(new_rows.keys()) and new_rows[row][0] <= lat and new_rows[row+1][0] > lat: 
 			finalRow = row
 	if finalRow < 0:
-		return -1
+		return -1,dict
 	else:
 		start_grid = new_rows[finalRow][1]
 		finalCol = -1
