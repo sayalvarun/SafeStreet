@@ -143,12 +143,12 @@ def getMidLatLong(tile):
 
 def computeNewWaypoints(directionList):
 	startTup = directionList[0]
-	wayps = []
+	wayps = set()
 	for p in directionList[1:-1]:
 		tiles = getTilesForLeg(startTup, p)
 		pprint.pprint(tiles)
 		for t in tiles:
-			wayps.append(getMidLatLong(t))
+			wayps.add(getMidLatLong(t))
 		startTup = p
 	return wayps
 	
