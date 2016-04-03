@@ -18,6 +18,7 @@ def getURL(source, destination):
     url += source
     url += "&destination="
     url += destination
+    url += "&mode=walking"
     url += "&key="
     url += getKey()
     return string.replace(url, "\n", "")
