@@ -38,9 +38,10 @@ def calculate_grids():
 
 
 def get_details(grid_num):
-	if grid_num < 0 or grid_num > len(new_grid.keys()):
-		return -1
 	global new_grid
+	if grid_num < 0 or grid_num > len(new_grid.keys()):
+		print "in get details"
+		return -1
 	return new_grid[grid_num]
 
 def find_grid(lat,lon):
