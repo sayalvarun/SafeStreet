@@ -38,6 +38,8 @@ def calculate_grids():
 
 
 def get_details(grid_num):
+	if grid_num < 0 or grid_num > len(new_grid.keys()):
+		return -1
 	global new_grid
 	return new_grid[grid_num]
 
